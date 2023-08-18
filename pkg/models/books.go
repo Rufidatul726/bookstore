@@ -2,7 +2,11 @@ package models
 
 import (
 	"github.com/jinzhu/gorm"
+
+	"github.com/Rufidatul726/bookstore/pkg/config"
 )
+
+var db *gorm.DB
 
 // Book is a struct to mapping the book table in the database
 type Book struct {
@@ -12,27 +16,42 @@ type Book struct {
 	Author      string `json:"author"`
 }
 
-// TableName is a function to change the table name
-func (b *Book) TableName() string {
-	return "book"
+func init() {
+	config.ConnectDB()
+	db := config.GetDB()
+	db.AutoMigrate(&Book{})
 }
 
 // CreateBook is a function to create a new book
-func CreateBook(book *Book) (*Book, error) {
-	if err := config.DB.Create(book).Error; err != nil {
-		return nil, err
-	}
-
-	return book, nil
+func (b *Book) CreateBook() *Book {
+	db.NewRecord(b)
+	db.Create(&b)
+	return b
 }
 
-// GetBook is a function to get all books
-func GetBook() (*[]Book, error) {
+// GetAllBooks is a function to get all books
+func GetAllBooks() []Book {
 	var books []Book
+	db.Find(&books)
+	return books
+}
 
-	if err := config.DB.Find(&books).Error; err != nil {
-		return nil, err
-	}
+// GetBookByID is a function to get a book by id
+func GetBookByID(id int64) (*Book, *gorm.DB) {
+	var getBook Book
+	db := db.Where("ID = ?", id).Find(&getBook)
+	return &getBook, db
+}
 
-	return &books, nil
+// UpdateBook is a function to update a book
+func (b *Book) UpdateBook(id int64) *Book {
+	db.Save(&b)
+	return b
+}
+
+// DeleteBook is a function to delete a book
+func DeleteBook(id int64) Book {
+	var book Book
+	db.Where("ID = ?", id).Delete(book)
+	return book
 }
