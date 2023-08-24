@@ -10,7 +10,8 @@ var DB *gorm.DB
 
 // ConnectDB is a function to connect the database
 func ConnectDB() {
-	d, err := gorm.Open("mysql", "aurchey:aurchey@/bookstore?charset=utf8&parseTime=True&loc=Local")
+
+	d, err := gorm.Open("mysql", "aurchey:aurchey@tcp(127.0.0.1:3306)/bookstore?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		panic("failed to connect database")
 	}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -15,7 +16,9 @@ var NewBook models.Book
 // GetBook is a function to get all books
 func GetBook(w http.ResponseWriter, r *http.Request) {
 	newBooks := models.GetAllBooks()
+	log.Println(newBooks)
 	res, _ := json.Marshal(newBooks)
+	log.Println(res)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
@@ -40,9 +43,11 @@ func GetBookById(w http.ResponseWriter, r *http.Request) {
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	CreateBook := &models.Book{}
 	utils.ParseBody(r, CreateBook)
+	log.Println(CreateBook.Title + " " + CreateBook.Description + " " + CreateBook.Author)
 	bookDetail := CreateBook.CreateBook()
+	log.Println(bookDetail)
 	res, _ := json.Marshal(bookDetail)
-	w.Header().Set("Content-Type", "pkglication/json")
+	log.Println(res)
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
 }
@@ -72,8 +77,8 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	if error != nil {
 		panic(error)
 	}
-	bookDetail := models.DeleteBook(ID)
-	res, _ := json.Marshal(bookDetail)
+	book := models.DeleteBook(ID)
+	res, _ := json.Marshal(book)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
